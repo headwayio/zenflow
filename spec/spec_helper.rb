@@ -1,6 +1,12 @@
 require 'simplecov'
 require 'coveralls'
 
+if ENV['CI'] || !$stdout.tty?
+  RSpec.configure do |config|
+    config.formatter = 'progress' # Use simple dots in CI environments
+  end
+end
+
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new [
   SimpleCov::Formatter::HTMLFormatter,
   Coveralls::SimpleCov::Formatter

@@ -121,9 +121,9 @@ describe Zenflow::Shell do
         allow(Zenflow::Shell).to receive(:last_exit_status).and_return(response)
         expect(Zenflow::Shell).to receive(:`).with(command).and_return(response)
         expect(Zenflow::Shell).to receive(:puts).with(Regexp.new(response))
-        expect(Zenflow).to receive(:Log).with(/aborted/, color: :red)
-        expect(Zenflow).to receive(:Log).with(/exit status: #{response}/i, color: :red, indent: true)
-        expect(Zenflow).to receive(:Log).with(/following commands manually/, color: :red)
+        expect(Zenflow).to receive(:Log).with("Process exited with non-zero status", color: :red).once
+        expect(Zenflow).to receive(:Log).with(/Exit status:/, color: :red, indent: true).once
+        expect(Zenflow).to receive(:Log).with("You may need to run any following commands manually...", color: :red).once
       end
 
       subject { Zenflow::Shell.run_with_result_check(command) }

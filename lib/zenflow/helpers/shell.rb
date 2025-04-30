@@ -50,17 +50,42 @@ module Zenflow
       end
 
       def run_with_result_check(command, options = {})
-        output = `#{command}`
-        Zenflow::LogToFile(output)
-        if last_exit_status.to_i.positive? && !options[:silent]
-          puts "#{output.strip}\n" if output.strip != ""
+        begin
+          output = `#{command}`
+          Zenflow::LogToFile(output)
 
-          Zenflow::Log("Process aborted", color: :red)
-          Zenflow::Log("Exit status: #{last_exit_status}", color: :red, indent: true)
-          Zenflow::Log("You may need to run any following commands manually...", color: :red)
-          failed!($CHILD_STATUS.to_i)
+          if last_exit_status.to_i.positive?
+            if options[:allow_failure]
+              # Log the failure but continue without aborting
+              Zenflow::LogToFile("Command failed but continuing: #{last_exit_status}")
+            elsif !options[:silent]
+              puts "#{output.strip}\n" if output.strip != ""
+
+              Zenflow::Log("Process exited with non-zero status", color: :red)
+              Zenflow::Log("Exit status: #{last_exit_status}", color: :red, indent: true)
+              Zenflow::Log("You may need to run any following commands manually...", color: :red)
+              failed!($CHILD_STATUS.to_i)
+            else
+              # Silent failure
+              failed!($CHILD_STATUS.to_i)
+            end
+          end
+
+          output
+        rescue => e
+          # Handle exceptions during command execution
+          Zenflow::LogToFile("Exception running command: #{e.message}")
+          unless options[:silent]
+            Zenflow::Log("Exception running command: #{e.message}", color: :red)
+          end
+
+          if options[:allow_failure]
+            return ""
+          else
+            failed!(-1) # Use a special code for exception
+            return ""
+          end
         end
-        output
       end
 
       def last_exit_status

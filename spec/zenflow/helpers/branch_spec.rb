@@ -60,16 +60,16 @@ describe Zenflow::Branch do
   describe "self.update" do
     it "updates the branch" do
       expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('merge')
-      expect(Zenflow).to receive(:Log).with("Updating the master branch")
-      expect(Zenflow::Shell).to receive(:run).with("git checkout master && git pull")
-      Zenflow::Branch.update('master')
+      expect(Zenflow).to receive(:Log).with("Updating the main branch")
+      expect(Zenflow::Shell).to receive(:run).with("git checkout main && git pull")
+      Zenflow::Branch.update('main')
     end
 
     it "updates the branch using a rebase override" do
       expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('merge')
-      expect(Zenflow).to receive(:Log).with("Updating the master branch using pull with --rebase")
-      expect(Zenflow::Shell).to receive(:run).with("git checkout master && git pull --rebase")
-      Zenflow::Branch.update('master', true)
+      expect(Zenflow).to receive(:Log).with("Updating the main branch using pull with --rebase")
+      expect(Zenflow::Shell).to receive(:run).with("git checkout main && git pull --rebase")
+      Zenflow::Branch.update('main', true)
     end
   end
 
@@ -77,33 +77,33 @@ describe Zenflow::Branch do
     it "merges the branch using the merge strategy" do
       expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('merge')
       expect(Zenflow::Branch).to receive(:checkout).with("feature/testing-123")
-      expect(Zenflow::Branch).to receive(:merge).with('master')
+      expect(Zenflow::Branch).to receive(:merge).with('main')
 
-      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'master')
+      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'main')
     end
 
     it "merges the branch using the rebase strategy" do
       expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('rebase')
-      expect(Zenflow::Branch).to receive(:rebase).with("feature/testing-123", 'master')
+      expect(Zenflow::Branch).to receive(:rebase).with("feature/testing-123", 'main')
 
-      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'master')
+      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'main')
     end
 
     it "optionally allows the merge strategy to be overridden by a --rebase flag when doing an update" do
       expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('merge')
-      expect(Zenflow::Branch).to receive(:rebase).with("feature/testing-123", 'master')
+      expect(Zenflow::Branch).to receive(:rebase).with("feature/testing-123", 'main')
 
-      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'master', true)
+      Zenflow::Branch.apply_merge_strategy('feature', 'testing-123', 'main', true)
     end
   end
 
   describe "self.create" do
     it "updates the branch" do
       expect(Zenflow).to receive(:Log).with(
-        "Creating the feature/test-branch-creation branch based on master"
+        "Creating the feature/test-branch-creation branch based on main"
       )
-      expect(Zenflow::Shell).to receive(:run).with("git checkout -b feature/test-branch-creation master")
-      Zenflow::Branch.create('feature/test-branch-creation', 'master')
+      expect(Zenflow::Shell).to receive(:run).with("git checkout -b feature/test-branch-creation main")
+      Zenflow::Branch.create('feature/test-branch-creation', 'main')
     end
   end
 
@@ -257,9 +257,9 @@ describe Zenflow::Branch do
 
   describe "self.rebase" do
     it "checks out the branch" do
-      expect(Zenflow).to receive(:Log).with("Rebasing feature/test-checkout on top of the master branch")
-      expect(Zenflow::Shell).to receive(:run).with("git rebase master feature/test-checkout")
-      Zenflow::Branch.rebase('feature/test-checkout', 'master')
+      expect(Zenflow).to receive(:Log).with("Rebasing feature/test-checkout on top of the main branch")
+      expect(Zenflow::Shell).to receive(:run).with("git rebase main feature/test-checkout")
+      Zenflow::Branch.rebase('feature/test-checkout', 'main')
     end
   end
 

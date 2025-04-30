@@ -65,7 +65,7 @@ describe Zenflow::PullRequest do
   context "creating pull requests" do
     let(:good_request_options) do
       {
-        base: 'master',
+        base: 'main',
         head: 'feature/new-branch',
         title: 'Feaure: new-branch',
         body: 'making a new pull request'
@@ -74,7 +74,7 @@ describe Zenflow::PullRequest do
 
     let(:bad_request_options) do
       {
-        base: 'master',
+        base: 'main',
         head: 'feature/phoney',
         title: 'this feature does not exist',
         body: 'gonna fail'

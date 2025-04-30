@@ -1,6 +1,6 @@
 ---
 project: zenflow
-development_branch: master
+development_branch: main
 qa_branch: qa
 backup_remote: false
 confirm_review: true

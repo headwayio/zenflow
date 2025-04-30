@@ -56,19 +56,19 @@ In Zenflow a feature branch is used to isolate the development of a new feature 
 
 To start a feature in Zenflow run `zenflow feature start`.
 
-You'll be asked for the name of the feature - make it something descriptive - and a new branch will be creaated from master called feature/FEATURE-NAME.
+You'll be asked for the name of the feature - make it something descriptive - and a new branch will be creaated from main called feature/FEATURE-NAME.
 
 Now you can work and commit normally. If you have Capistrano set up with a QA server, you can deploy the feature at any time by running `zenflow feature deploy`. This will merge the current feature branch in to the qa branch, deploy to the QA server if you have one configured with Capistrano, then go back to the feature branch.
 
-If master has been updated and you want the latest code brought to your feature, you can run `zenflow feature update` to merge the latest code from master.
+If main has been updated and you want the latest code brought to your feature, you can run `zenflow feature update` to merge the latest code from main.
 
-When you're ready for code review run `zenflow feature review` to create a pull request on GitHub, comparing the master branch and the feature branch. Work with any feedback from the rest of the team as necessary until the code is ready for production.
+When you're ready for code review run `zenflow feature review` to create a pull request on GitHub, comparing the main branch and the feature branch. Work with any feedback from the rest of the team as necessary until the code is ready for production.
 
-Once development of the feature is completed run `zenflow feature finish` to merge the feature branch in to master and delete the local and remote branches. If Zenflow is set up to confirm review and testing you'll be asked if you've tested this code on QA and had it code reviewed. Don't lie to Zenflow.
+Once development of the feature is completed run `zenflow feature finish` to merge the feature branch in to main and delete the local and remote branches. If Zenflow is set up to confirm review and testing you'll be asked if you've tested this code on QA and had it code reviewed. Don't lie to Zenflow.
 
 #### Releases
 
-As features are finished they accumulate in the `master` branch. To get them to production we create a release.
+As features are finished they accumulate in the `main` branch. To get them to production we create a release.
 
 To start a release in Zenflow run `zenflow release start` and provide a release name. Themed release names are fun - robots, spaceships, football players, flowers. Something there's a lot of.
 
@@ -92,7 +92,7 @@ After the hotfix branch is created you can work and commit as normally. Running 
 
 When you're ready for code review run `zenflow hotfix review` to create a pull request on GitHub, comparing the production branch and the hotfix branch. Work with any feedback from the rest of the team as necessary until the code is ready for production.
 
-Once development of the feature is completed run `zenflow hotfix finish` to merge the feature branch in to production and master, plus delete the local and remote branches. If Zenflow is set up to confirm review and testing you'll be asked if you've tested this code on QA and had it code reviewed. Don't lie to Zenflow.
+Once development of the feature is completed run `zenflow hotfix finish` to merge the feature branch in to production and main, plus delete the local and remote branches. If Zenflow is set up to confirm review and testing you'll be asked if you've tested this code on QA and had it code reviewed. Don't lie to Zenflow.
 
 To deploy to production, type `zenflow deploy production`. Hotfixes are not automatically deployed to production when they are finished.
 

@@ -3,7 +3,7 @@ require 'spec_helper'
 module BranchCommandSpec
   class TestCommand < Zenflow::BranchCommand
     flow "test"
-    branch source: "master"
+    branch source: "main"
     branch destination: "production"
     branch deploy: "deploy1"
     branch deploy: "deploy2"
@@ -27,8 +27,8 @@ module BranchCommandSpec
         context 'merge_strategy: merge' do
           before do
             expect(Zenflow::Requests).to receive(:ask).and_return("new-test-branch")
-            expect(Zenflow::Branch).to receive(:update).with("master")
-            expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "master")
+            expect(Zenflow::Branch).to receive(:update).with("main")
+            expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "main")
             expect(Zenflow::Branch).to receive(:push).with("test/new-test-branch")
             expect(Zenflow::Branch).to receive(:track).with("test/new-test-branch")
           end
@@ -39,8 +39,8 @@ module BranchCommandSpec
           before do
             expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('rebase')
             expect(Zenflow::Requests).to receive(:ask).and_return("new-test-branch")
-            expect(Zenflow::Branch).to receive(:update).with("master")
-            expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "master")
+            expect(Zenflow::Branch).to receive(:update).with("main")
+            expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "main")
             expect(Zenflow::Branch).to_not receive(:push).with("test/new-test-branch")
             expect(Zenflow::Branch).to_not receive(:track).with("test/new-test-branch")
           end
@@ -51,16 +51,16 @@ module BranchCommandSpec
       context "when offline" do
         before do
           expect(Zenflow::Requests).to receive(:ask).and_return("new-test-branch")
-          expect(Zenflow::Branch).to receive(:checkout).with("master")
-          expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "master")
+          expect(Zenflow::Branch).to receive(:checkout).with("main")
+          expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "main")
         end
         it { TestCommand.new.invoke(:start, nil, offline: true) }
       end
 
       context "when supplying a name" do
         before do
-          expect(Zenflow::Branch).to receive(:update).with("master")
-          expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "master")
+          expect(Zenflow::Branch).to receive(:update).with("main")
+          expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "main")
           expect(Zenflow::Branch).to receive(:push).with("test/new-test-branch")
           expect(Zenflow::Branch).to receive(:track).with("test/new-test-branch")
         end
@@ -70,8 +70,8 @@ module BranchCommandSpec
       context "when asking for a name" do
         before do
           expect($stdin).to receive(:gets).and_return("new-test-branch\n")
-          expect(Zenflow::Branch).to receive(:update).with("master")
-          expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "master")
+          expect(Zenflow::Branch).to receive(:update).with("main")
+          expect(Zenflow::Branch).to receive(:create).with("test/new-test-branch", "main")
           expect(Zenflow::Branch).to receive(:push).with("test/new-test-branch")
           expect(Zenflow::Branch).to receive(:track).with("test/new-test-branch")
         end
@@ -124,15 +124,15 @@ module BranchCommandSpec
           expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('merge')
           expect(Zenflow::Branch).to receive(:current).with("test").and_return("new-test-branch")
           expect(Zenflow::Branch).to receive(:checkout).with("test/new-test-branch")
-          expect(Zenflow::Branch).to receive(:merge).with("master")
+          expect(Zenflow::Branch).to receive(:merge).with("main")
 
           context "no override for --rebase" do
-            expect(Zenflow::Branch).to receive(:update).with("master", nil)
+            expect(Zenflow::Branch).to receive(:update).with("main", nil)
             it { TestCommand.new.invoke(:update) }
           end
 
           context "override for --rebase" do
-            expect(Zenflow::Branch).to receive(:update).with("master", true)
+            expect(Zenflow::Branch).to receive(:update).with("main", true)
             it { TestCommand.new.invoke(:update, true) }
           end
         end
@@ -142,8 +142,8 @@ module BranchCommandSpec
         before do
           expect(Zenflow::Config).to receive(:[]).with(:merge_strategy).and_return('rebase')
           expect(Zenflow::Branch).to receive(:current).with("test").and_return("new-test-branch")
-          expect(Zenflow::Branch).to receive(:update).with("master", nil)
-          expect(Zenflow::Branch).to receive(:rebase).with("test/new-test-branch", 'master')
+          expect(Zenflow::Branch).to receive(:update).with("main", nil)
+          expect(Zenflow::Branch).to receive(:rebase).with("test/new-test-branch", 'main')
         end
         it { TestCommand.new.invoke(:update) }
       end
@@ -151,8 +151,8 @@ module BranchCommandSpec
 
     describe "#diff" do
       before do
-        expect(Zenflow).to receive(:Log).with("Displaying diff with master")
-        expect(Zenflow::Shell).to receive(:[]).with("git difftool master")
+        expect(Zenflow).to receive(:Log).with("Displaying diff with main")
+        expect(Zenflow::Shell).to receive(:[]).with("git difftool main")
       end
       it { TestCommand.new.invoke(:diff) }
     end
@@ -160,9 +160,9 @@ module BranchCommandSpec
     describe "#compare" do
       before do
         expect(Zenflow::Branch).to receive(:current).with("test").and_return("new-test-branch")
-        expect(Zenflow).to receive(:Log).with("Opening GitHub compare view for master...test/new-test-branch")
+        expect(Zenflow).to receive(:Log).with("Opening GitHub compare view for main...test/new-test-branch")
         expect(Zenflow::Repo).to receive(:slug).and_return("test-repo")
-        expect(Zenflow::Shell).to receive(:[]).with("open https://github.com/test-repo/compare/master...test/new-test-branch")
+        expect(Zenflow::Shell).to receive(:[]).with("open https://github.com/test-repo/compare/main...test/new-test-branch")
       end
       it { TestCommand.new.invoke(:compare) }
     end
@@ -259,7 +259,7 @@ module BranchCommandSpec
       let(:branch_name) { "test/new-test-branch" }
       before do
         expect(Zenflow::Branch).to receive(:current).with("test").and_return("new-test-branch")
-        expect(Zenflow::Branch).to receive(:checkout).with("master")
+        expect(Zenflow::Branch).to receive(:checkout).with("main")
       end
 
       context "when online" do
@@ -334,9 +334,9 @@ module BranchCommandSpec
 
               expect(Zenflow::Changelog).to receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
 
-              expect(Zenflow::Branch).to receive(:checkout).with("master")
+              expect(Zenflow::Branch).to receive(:checkout).with("main")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
-              expect(Zenflow::Branch).to receive(:push).with("master")
+              expect(Zenflow::Branch).to receive(:push).with("main")
               expect(Zenflow::Branch).to receive(:checkout).with("production")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
               expect(Zenflow::Branch).to receive(:push).with("production")
@@ -359,7 +359,7 @@ module BranchCommandSpec
 
               expect(Zenflow::Changelog).to receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
 
-              expect(Zenflow::Branch).to receive(:checkout).with("master")
+              expect(Zenflow::Branch).to receive(:checkout).with("main")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
               expect(Zenflow::Branch).to receive(:checkout).with("production")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
@@ -386,9 +386,9 @@ module BranchCommandSpec
 
               expect(Zenflow::Changelog).to receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
 
-              expect(Zenflow::Branch).to receive(:checkout).with("master")
+              expect(Zenflow::Branch).to receive(:checkout).with("main")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
-              expect(Zenflow::Branch).to receive(:push).with("master")
+              expect(Zenflow::Branch).to receive(:push).with("main")
               expect(Zenflow::Branch).to receive(:checkout).with("production")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
               expect(Zenflow::Branch).to receive(:push).with("production")
@@ -410,7 +410,7 @@ module BranchCommandSpec
 
               expect(Zenflow::Changelog).to receive(:update).with(rotate: true, name: "new-test-branch").and_return("YES")
 
-              expect(Zenflow::Branch).to receive(:checkout).with("master")
+              expect(Zenflow::Branch).to receive(:checkout).with("main")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")
               expect(Zenflow::Branch).to receive(:checkout).with("production")
               expect(Zenflow::Branch).to receive(:merge).with("test/new-test-branch")

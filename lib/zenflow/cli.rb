@@ -96,7 +96,7 @@ module Zenflow
         Zenflow::Log("Branches")
         Zenflow::Config[:development_branch] = Zenflow::Requests.ask(
           "What is the name of the main development branch?",
-          default: "master"
+          default: "main"
         )
         configure_branch(
           :staging_branch,

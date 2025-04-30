@@ -135,10 +135,10 @@ describe Zenflow::CLI do
     it 'configures branches for the project' do
       expect(Zenflow::Requests).to receive(:ask).with(
         "What is the name of the main development branch?",
-        default: "master"
-      ).and_return('master')
+        default: "main"
+      ).and_return('main')
       expect(Zenflow).to receive(:Log).with("Branches")
-      expect(Zenflow::Config).to receive(:[]=).with(:development_branch, 'master')
+      expect(Zenflow::Config).to receive(:[]=).with(:development_branch, 'main')
       expect(subject).to receive(:configure_branch).exactly(3).times
       subject.configure_branches
     end

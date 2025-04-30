@@ -45,7 +45,7 @@ module Zenflow
     subcommand "deploy", Zenflow::Deploy
 
     desc "init", "Write the zenflow config file."
-    def init(force: false)
+    def init(force = false)
       if Zenflow::Config.configured? && !force
         already_configured
       else

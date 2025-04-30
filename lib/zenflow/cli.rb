@@ -56,6 +56,7 @@ module Zenflow
         configure_remotes
         confirm_some_stuff
         set_up_changelog
+        set_up_version_file
         Zenflow::Config.save!
       end
     end
@@ -162,6 +163,27 @@ module Zenflow
           "Set up a changelog?",
           options: ["Y", "n"], default: "y"
         ) == "y"
+      end
+
+      def set_up_version_file
+        return if File.exist?("VERSION.yml")
+
+        Zenflow::Log("Version Management")
+        if Zenflow::Requests.ask(
+          "Set up a VERSION.yml file?",
+          options: ["Y", "n"], default: "y"
+        ) == "y"
+          initial_version = {
+            "major" => 0,
+            "minor" => 1,
+            "patch" => 0,
+            "pre" => nil
+          }
+          File.open("VERSION.yml", "w") do |file|
+            YAML.dump(initial_version, file)
+          end
+          Zenflow::Log("Created VERSION.yml with initial version 0.1.0", color: :green)
+        end
       end
     end
   end

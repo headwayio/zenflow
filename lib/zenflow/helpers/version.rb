@@ -10,7 +10,8 @@ module Zenflow
       if File.exist?(file)
         new(file)
       else
-        Zenflow::Log("No version file found (looking for #{file}).", color: :red)
+        Zenflow::Log("No VERSION.yml file found in the project root.", color: :red)
+        Zenflow::Log("Run `zenflow init` to set up your project with a VERSION.yml file.", color: :yellow)
         exit(1)
       end
     end

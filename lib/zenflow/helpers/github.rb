@@ -94,18 +94,40 @@ module Zenflow
     def authorize
       return unless zenflow_token.nil? || ask_should_update_zenflow_token?
 
-      Zenflow::Log("Authorizing with GitHub (#{user}@#{@hub})... Enter your GitHub password.")
-      oauth_response = JSON.parse(
-        Zenflow::Shell.run(
-          %(curl -u "#{user}" #{api_base_url}/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent),
+      Zenflow::Log("GitHub authentication is required for some Zenflow operations", color: :yellow)
+      Zenflow::Log("Please create a Personal Access Token at https://github.com/settings/tokens", color: :yellow)
+      Zenflow::Log("   with 'repo' scope selected", color: :yellow)
+
+      token_verified = false
+
+      until token_verified do
+        token = Zenflow::Requests.ask("Enter your GitHub Personal Access Token:", required: true)
+
+        # Verify the token works
+        verify_response = Zenflow::Shell.run(
+          %(curl -H "Authorization: token #{token}" #{api_base_url}/user --silent),
           silent: true
         )
-      )
-      if oauth_response['token']
-        set_config(TOKEN_KEY, oauth_response['token'])
-        Zenflow::Log("Authorized!")
-      else
-        Zenflow::Log("Something went wrong. Error from GitHub was: #{oauth_response['message']}")
+
+        verify_data = JSON.parse(verify_response) rescue nil
+
+        if verify_data && verify_data['login']
+          set_config(TOKEN_KEY, token)
+          Zenflow::Log("Authorized as #{verify_data['login']}!", color: :green)
+          token_verified = true
+        else
+          Zenflow::Log("Token verification failed. Please check your token and try again.", color: :red)
+
+          # Ask if they want to try again
+          if Zenflow::Requests.ask(
+            "Would you like to try entering your token again?",
+            options: ["Y", "n"],
+            default: "y"
+          ) != "y"
+            Zenflow::Log("GitHub authentication cancelled. Some features may not work properly.", color: :yellow)
+            break
+          end
+        end
       end
     end
 

@@ -30,6 +30,18 @@ module Zenflow
       ).to_s, indent: false, arrows: false, color: false)
     end
 
+    desc "github", "Configure GitHub authentication for the current project."
+    def github
+      Zenflow::Log("GitHub Authentication")
+      if Zenflow::Github::CURRENT.default_hub?
+        Zenflow::Github::CURRENT.set_user
+      else
+        Zenflow::Github::CURRENT.config
+      end
+      Zenflow::Github::CURRENT.authorize
+      Zenflow::Log("GitHub configuration complete!", color: :green)
+    end
+
     desc(
       "config [HUB]",
       "Configure the specified HUB (current project hub if none specified, or default hub if no current project)."

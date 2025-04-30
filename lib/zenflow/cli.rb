@@ -82,7 +82,16 @@ module Zenflow
         else
           Zenflow::Github::CURRENT.config
         end
-        Zenflow::Github::CURRENT.authorize
+
+        if Zenflow::Requests.ask(
+          "Configure GitHub authentication now? (Can be done later)",
+          options: ["y", "N"],
+          default: "n"
+        ) == "y"
+          Zenflow::Github::CURRENT.authorize
+        else
+          Zenflow::Log("Skipping GitHub authentication. You can add it later with `zenflow admin github`.", color: :yellow)
+        end
       end
 
       def configure_project

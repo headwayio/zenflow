@@ -6,7 +6,7 @@ require 'zenflow/helpers/version'
 require 'zenflow/version'
 
 Gem::Specification.new do |s|
-  s.required_ruby_version = '>= 2.5.5'
+  s.required_ruby_version = '>= 3.1.0'
   s.name        = "zenflow"
   s.version     = Zenflow::VERSION.to_s
   s.platform    = Gem::Platform::RUBY
@@ -19,16 +19,16 @@ Gem::Specification.new do |s|
   s.executables << "zenflow"
 
   # s.add_development_dependency('guard-rspec', '~> 3.0.2')
-  s.add_dependency "httparty", "~> 0.18.1"
-  s.add_dependency "rainbow", "~> 3.0" # Still supported and more modern
-  s.add_dependency "terminal-table", "~> 1.4.5"
-  s.add_dependency "thor", "~> 0.19.0"
+  s.add_dependency "httparty", "~> 0.23.1"
+  s.add_dependency "rainbow", "~> 3.1"
+  s.add_dependency "terminal-table", "4.0.0"
+  s.add_dependency "thor", "~> 1.3.2"
   s.add_development_dependency('byebug')
   s.add_development_dependency('fuubar', '~> 2.5.1')
-  s.add_development_dependency('rspec', '~> 3.10')
-  s.add_development_dependency('simplecov', '~> 0.21.2')
-  s.add_development_dependency('vcr', '~> 6.0.0')
-  s.add_development_dependency('webmock', '~> 3.13.0')
+  s.add_development_dependency('rspec', '~> 3.13')
+  s.add_development_dependency('simplecov', '~> 0.22.0')
+  s.add_development_dependency('vcr', '~> 6.3.1')
+  s.add_development_dependency('webmock', '~> 3.25.1')
   s.files = `git ls-files`.split("\n")
   s.require_path = "lib"
 end

@@ -4,7 +4,7 @@ module Zenflow
     desc "list", "Show all open reviews."
     def list
       Zenflow::Log(
-        Terminal::Table.new(
+        ::Terminal::Table.new(
           rows: Zenflow::PullRequest.list.map do |request|
             [request["number"], request["head"]["ref"]]
           end

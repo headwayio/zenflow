@@ -5,13 +5,17 @@ module Zenflow
     bundle_exec = 'bundle exec ' if File.exist?('./Gemfile')
 
     Branch.push(to)
-    if opts[:migrations]
+    command = if opts[:migrations]
       Log("Deploying with migrations to #{to}")
-      Shell["#{bundle_exec}cap #{to} deploy:migrations"]
+      "#{bundle_exec}cap #{to} deploy:migrations"
     else
       Log("Deploying to #{to}")
-      Shell["#{bundle_exec}cap #{to} deploy"]
+      "#{bundle_exec}cap #{to} deploy"
     end
+
+    command += " --trace" if opts[:trace]
+
+    Shell[command]
   end
 
   # Deployment sub-commands

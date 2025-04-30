@@ -18,7 +18,7 @@ describe Zenflow::Admin do
         )
       )
       expect(Zenflow).to receive(:Log).with("Recogized hubs")
-      expect(Terminal::Table).to receive(:new).with(
+      expect(::Terminal::Table).to receive(:new).with(
         headings: ["Hub"],
         rows: [
           ["github.com [default] [current]"],
@@ -53,7 +53,7 @@ describe Zenflow::Admin do
           ["Parameter 3", "Github Config Key 3", "Github Conifg Value 3", "Value 3"]
         ]
       )
-      expect(Terminal::Table).to receive(:new).with(
+      expect(::Terminal::Table).to receive(:new).with(
         headings: ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
         rows: [
           ["Parameter 1", "Github Config Key 1", "Github Conifg Value 1", "Value 1"],

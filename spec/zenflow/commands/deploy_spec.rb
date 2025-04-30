@@ -22,10 +22,10 @@ describe Zenflow::Deploy do
 
     context 'with trace' do
       it 'deploys with trace' do
-        Zenflow::Branch.should_receive(:push).with('some-server')
-        Zenflow.should_receive(:Log).with("Deploying to some-server")
-        Zenflow::Shell.should_receive(:run).with("cap some-server deploy --trace")
-        Zenflow::Deploy('some-server', :trace => true)
+        expect(Zenflow::Branch).to receive(:push).with('some-server')
+        expect(Zenflow).to receive(:Log).with("Deploying to some-server")
+        expect(Zenflow::Shell).to receive(:[]).with("bundle exec cap some-server deploy --trace")
+        Zenflow::Deploy('some-server', trace: true)
       end
     end
   end

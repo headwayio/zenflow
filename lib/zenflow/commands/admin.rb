@@ -4,7 +4,7 @@ module Zenflow
     desc "list", "Show all configured hubs."
     def list
       Zenflow::Log("Recogized hubs")
-      Zenflow::Log(Terminal::Table.new(
+      Zenflow::Log(::Terminal::Table.new(
         headings: ['Hub'],
         rows: get_list_of_hubs()
       ).to_s, indent: false, arrows: false, color: false)
@@ -24,7 +24,7 @@ module Zenflow
 
       Zenflow::Log("Configuration details for hub #{hub_label(hub.hub)}")
 
-      Zenflow::Log(Terminal::Table.new(
+      Zenflow::Log(::Terminal::Table.new(
         headings: ["Parameter", "Github Config Key", "Github Config Value", "Value (with system defaults)"],
         rows: hub.describe
       ).to_s, indent: false, arrows: false, color: false)

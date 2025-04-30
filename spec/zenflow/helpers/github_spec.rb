@@ -189,50 +189,63 @@ describe Zenflow::Github do
 
         context 'and authorization succeeds' do
           before do
-            expect(Zenflow).to(
-              receive("Log")
-              .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
-            )
-            expect(hub).to receive(:user).twice.and_return('adamkittelson')
+            # New authentication messages
+            expect(Zenflow).to receive("Log").with("GitHub authentication is required for some Zenflow operations", color: :yellow)
+            expect(Zenflow).to receive("Log").with("Please create a Personal Access Token at https://github.com/settings/tokens", color: :yellow)
+            expect(Zenflow).to receive("Log").with("   with 'repo' scope selected", color: :yellow)
+
+            # Ask for token
+            expect(Zenflow::Requests).to receive(:ask).with("Enter your GitHub Personal Access Token:", required: true).and_return("test-token")
+
+            # API call with token
             expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
             expect(Zenflow::Shell).to(
               receive(:run)
               .with(
-                %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+                %{curl -H "Authorization: token test-token" https://api.base.url/user --silent},
                 silent: true
-              ).and_return('{"token": "super secure token"}')
+              ).and_return('{"login": "adamkittelson"}')
             )
           end
 
           it 'authorizes with Github' do
-            expect(hub).to receive(:set_config).with('token', "super secure token")
-            expect(Zenflow).to receive("Log").with("Authorized!")
+            expect(hub).to receive(:set_config).with('token', "test-token")
+            expect(Zenflow).to receive("Log").with("Authorized as adamkittelson!", color: :green)
             hub.authorize
           end
         end
 
         context 'and authorization fails' do
           before do
-            expect(Zenflow).to(
-              receive("Log")
-              .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
-            )
-            expect(hub).to receive(:user).twice.and_return('adamkittelson')
+            # New authentication messages
+            expect(Zenflow).to receive("Log").with("GitHub authentication is required for some Zenflow operations", color: :yellow)
+            expect(Zenflow).to receive("Log").with("Please create a Personal Access Token at https://github.com/settings/tokens", color: :yellow)
+            expect(Zenflow).to receive("Log").with("   with 'repo' scope selected", color: :yellow)
+
+            # Ask for token
+            expect(Zenflow::Requests).to receive(:ask).with("Enter your GitHub Personal Access Token:", required: true).and_return("invalid-token")
+
+            # API call with invalid token
             expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
             expect(Zenflow::Shell).to(
               receive(:run)
               .with(
-                %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+                %{curl -H "Authorization: token invalid-token" https://api.base.url/user --silent},
                 silent: true
-              ).and_return('{"message": "failed to authorize, bummer"}')
+              ).and_return('{"message": "Bad credentials"}')
             )
+
+            # Prompt to try again
+            expect(Zenflow).to receive("Log").with("Token verification failed. Please check your token and try again.", color: :red)
+            expect(Zenflow::Requests).to receive(:ask).with(
+              "Would you like to try entering your token again?",
+              options: ["Y", "n"],
+              default: "y"
+            ).and_return("n")
           end
 
-          it 'authorizes with Github' do
-            expect(Zenflow).to(
-              receive("Log")
-              .with("Something went wrong. Error from GitHub was: failed to authorize, bummer")
-            )
+          it 'handles the failed authorization' do
+            expect(Zenflow).to receive("Log").with("GitHub authentication cancelled. Some features may not work properly.", color: :yellow)
             hub.authorize
           end
         end
@@ -256,50 +269,63 @@ describe Zenflow::Github do
 
       context 'and authorization succeeds' do
         before do
-          expect(Zenflow).to(
-            receive("Log")
-            .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
-          )
-          expect(hub).to receive(:user).twice.and_return('adamkittelson')
+          # New authentication messages
+          expect(Zenflow).to receive("Log").with("GitHub authentication is required for some Zenflow operations", color: :yellow)
+          expect(Zenflow).to receive("Log").with("Please create a Personal Access Token at https://github.com/settings/tokens", color: :yellow)
+          expect(Zenflow).to receive("Log").with("   with 'repo' scope selected", color: :yellow)
+
+          # Ask for token
+          expect(Zenflow::Requests).to receive(:ask).with("Enter your GitHub Personal Access Token:", required: true).and_return("new-token")
+
+          # API call with token
           expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
           expect(Zenflow::Shell).to(
             receive(:run)
             .with(
-              %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+              %{curl -H "Authorization: token new-token" https://api.base.url/user --silent},
               silent: true
-            ).and_return('{"token": "super secure token"}')
+            ).and_return('{"login": "adamkittelson"}')
           )
         end
 
         it 'authorizes with Github' do
-          expect(hub).to receive(:set_config).with('token', "super secure token")
-          expect(Zenflow).to receive("Log").with("Authorized!")
+          expect(hub).to receive(:set_config).with('token', "new-token")
+          expect(Zenflow).to receive("Log").with("Authorized as adamkittelson!", color: :green)
           hub.authorize
         end
       end
 
       context 'and authorization fails' do
         before do
-          expect(Zenflow).to(
-            receive("Log")
-            .with("Authorizing with GitHub (adamkittelson@my-hub)... Enter your GitHub password.")
-          )
-          expect(hub).to receive(:user).twice.and_return('adamkittelson')
+          # New authentication messages
+          expect(Zenflow).to receive("Log").with("GitHub authentication is required for some Zenflow operations", color: :yellow)
+          expect(Zenflow).to receive("Log").with("Please create a Personal Access Token at https://github.com/settings/tokens", color: :yellow)
+          expect(Zenflow).to receive("Log").with("   with 'repo' scope selected", color: :yellow)
+
+          # Ask for token
+          expect(Zenflow::Requests).to receive(:ask).with("Enter your GitHub Personal Access Token:", required: true).and_return("bad-token")
+
+          # API call with invalid token
           expect(hub).to receive(:api_base_url).and_return('https://api.base.url')
           expect(Zenflow::Shell).to(
             receive(:run)
             .with(
-              %{curl -u "adamkittelson" https://api.base.url/authorizations -d '{"scopes":["repo"], "note":"Zenflow"}' --silent},
+              %{curl -H "Authorization: token bad-token" https://api.base.url/user --silent},
               silent: true
-            ).and_return('{"message": "failed to authorize, bummer"}')
+            ).and_return('{"message": "Bad credentials"}')
           )
+
+          # Prompt to try again
+          expect(Zenflow).to receive("Log").with("Token verification failed. Please check your token and try again.", color: :red)
+          expect(Zenflow::Requests).to receive(:ask).with(
+            "Would you like to try entering your token again?",
+            options: ["Y", "n"],
+            default: "y"
+          ).and_return("n")
         end
 
-        it 'does not authorize with Github' do
-          expect(Zenflow).to(
-            receive("Log")
-            .with("Something went wrong. Error from GitHub was: failed to authorize, bummer")
-          )
+        it 'handles the failed authorization' do
+          expect(Zenflow).to receive("Log").with("GitHub authentication cancelled. Some features may not work properly.", color: :yellow)
           hub.authorize
         end
       end

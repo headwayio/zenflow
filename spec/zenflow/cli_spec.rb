@@ -53,7 +53,7 @@ describe Zenflow::CLI do
     context "when the user wants to configure a staging branch" do
       before do
         expect(Zenflow::Requests).to receive(:ask).with(
-          "Use a branch for staging releases and hotfixes?",
+          "Use a branch for staging releases?",
           options: ["Y", "n"],
           default: "y"
         ).and_return('y')
@@ -67,7 +67,7 @@ describe Zenflow::CLI do
         expect(Zenflow::Config).to receive(:[]=).with(:staging_branch, 'staging')
         subject.configure_branch(
           :staging_branch,
-          "Use a branch for staging releases and hotfixes?",
+          "Use a branch for staging releases?",
           'staging'
         )
       end
@@ -76,7 +76,7 @@ describe Zenflow::CLI do
     context "when the user does not want to configure a staging branch" do
       before do
         expect(Zenflow::Requests).to receive(:ask).with(
-          "Use a branch for staging releases and hotfixes?",
+          "Use a branch for staging releases?",
           options: ["Y", "n"],
           default: "y"
         ).and_return('n')
@@ -86,7 +86,7 @@ describe Zenflow::CLI do
         expect(Zenflow::Config).to receive(:[]=).with(:staging_branch, false)
         subject.configure_branch(
           :staging_branch,
-          "Use a branch for staging releases and hotfixes?",
+          "Use a branch for staging releases?",
           'staging'
         )
       end
@@ -134,7 +134,7 @@ describe Zenflow::CLI do
   describe "#configure_branches" do
     it 'configures branches for the project' do
       expect(Zenflow::Requests).to receive(:ask).with(
-        "What is the name of the main development branch?",
+        "What is the name of the primary development branch?",
         default: "main"
       ).and_return('main')
       expect(Zenflow).to receive(:Log).with("Branches")
@@ -278,6 +278,12 @@ describe Zenflow::CLI do
       context "when zenflow has not been configured" do
         before do
           expect(Zenflow::Config).to receive(:configured?).and_return(false)
+          # Mock the GitHub auth prompt to return 'y' to simulate user choosing to authenticate
+          expect(Zenflow::Requests).to receive(:ask).with(
+            "Configure GitHub authentication now? (Can be done later)",
+            options: ["y", "N"],
+            default: "n"
+          ).and_return("y")
         end
 
         it 'configures zenflow' do
@@ -300,6 +306,12 @@ describe Zenflow::CLI do
       before do
         expect(Zenflow::Config).to receive(:configured?).and_return(false)
         expect(current).to receive(:default_hub?).and_return(true)
+        # Mock the GitHub auth prompt to return 'y' to simulate user choosing to authenticate
+        expect(Zenflow::Requests).to receive(:ask).with(
+          "Configure GitHub authentication now? (Can be done later)",
+          options: ["y", "N"],
+          default: "n"
+        ).and_return("y")
       end
 
       it 'configures zenflow' do
@@ -325,6 +337,12 @@ describe Zenflow::CLI do
       context 'and it is forced to initialize' do
         before do
           expect(current).to receive(:default_hub?).and_return(true)
+          # Mock the GitHub auth prompt to return 'y' to simulate user choosing to authenticate
+          expect(Zenflow::Requests).to receive(:ask).with(
+            "Configure GitHub authentication now? (Can be done later)",
+            options: ["y", "N"],
+            default: "n"
+          ).and_return("y")
         end
 
         it 'configures zenflow' do
@@ -342,10 +360,14 @@ describe Zenflow::CLI do
         end
       end
 
-      context 'and it is forced to initialize' do
+      context 'and it is not forced to initialize' do
         before do
           expect(Zenflow).to receive(:Log).with('Warning', color: :red)
-          expect(Zenflow::Requests).to receive(:ask).and_return('n')
+          expect(Zenflow::Requests).to receive(:ask).with(
+            'There is an existing config file. Overwrite it?',
+            options: ["y", "N"],
+            default: "n"
+          ).and_return('n')
           expect(Zenflow).to receive(:Log).with('Aborting...', color: :red)
         end
 

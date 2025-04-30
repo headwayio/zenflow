@@ -105,16 +105,15 @@ module Zenflow
       def configure_branches
         Zenflow::Log("Branches")
         Zenflow::Config[:development_branch] = Zenflow::Requests.ask(
-          "What is the name of the main development branch?",
+          "What is the name of the primary development branch?",
           default: "main"
         )
-        configure_branch(
-          :staging_branch,
-          "Use a branch for staging releases and hotfixes?",
+        configure_branch(:staging_branch,
+          "Use a branch for staging releases?",
           "staging"
         )
-        configure_branch(:qa_branch, "Use a branch for testing features?", "qa")
-        configure_branch(:release_branch, "Use a release branch?", "production")
+        configure_branch(:qa_branch, "Use a branch for QA releases?", "qa")
+        configure_branch(:release_branch, "Use a branch for production releases?", "production")
       end
 
       def configure_branch(branch, question, default)
